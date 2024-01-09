@@ -110,7 +110,7 @@ class RainbowDecorator {
     keywords: string[]
   ): FoundKeyword | null {
     for (const keyword of keywords) {
-      let start = line.text.search(`\\b${keyword}\\b`);
+      let start = line.text.search(`(?<!//.*)(?<!{.*)\\b${keyword}\\b(?!})`);
       if (start > -1) {
         return {
           keyword: keyword,
