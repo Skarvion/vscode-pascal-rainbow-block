@@ -7,6 +7,10 @@ import * as vscode from "vscode";
 export function activate(context: vscode.ExtensionContext) {
   let rainbowDecorator = new RainbowDecorator();
 
+  if (vscode.window.activeTextEditor) {
+    rainbowDecorator.updateDecorations(vscode.window.activeTextEditor);
+  }
+
   vscode.window.onDidChangeActiveTextEditor(
     (editor) => {
       if (editor) {
