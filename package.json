@@ -2,7 +2,7 @@
   "name": "pascalrainbowblock",
   "displayName": "Pascal Rainbow Block",
   "description": "Set begin and end block with rainbow colour based on level.",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "engines": {
     "vscode": "^1.54.0"
   },

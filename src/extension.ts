@@ -39,6 +39,8 @@ interface FoundKeyword {
 class RainbowDecorator {
   private decorationType: vscode.TextEditorDecorationType[] = [];
 
+  private keywords = ["begin", "end", "try", "except", "finally"];
+
   constructor() {
     for (let i = 1; i <= 7; i++) {
       this.decorationType.push(
@@ -65,39 +67,30 @@ class RainbowDecorator {
     for (let i = 0; i < editor.document.lineCount; i++) {
       const line = editor.document.lineAt(i);
 
-      // TODO Fix potential bug when there is multiple begin and end in the same line
-      const foundKeyword = this.findKeyword(line, [
-        "begin",
-        "end",
-        "try",
-        "except",
-        "finally",
-      ]);
+      const foundKeywords = this.findKeywords(line);
 
-      if (foundKeyword === null) {
-        continue;
-      }
+      foundKeywords.forEach((foundKeyword) => {
+        switch (foundKeyword.keyword) {
+          case "begin":
+          case "try":
+            stack.push(stack.length);
+            currentLevel = stack.length - 1;
+            break;
+          case "end":
+            currentLevel = stack.pop() ?? 0;
+            break;
+          default:
+            currentLevel = stack.length - 1 >= 0 ? stack.length - 1 : 0;
+        }
 
-      switch (foundKeyword.keyword) {
-        case "begin":
-        case "try":
-          stack.push(stack.length);
-          currentLevel = stack.length - 1;
-          break;
-        case "end":
-          currentLevel = stack.pop() ?? 0;
-          break;
-        default:
-          currentLevel = stack.length - 1 >= 0 ? stack.length - 1 : 0;
-      }
+        const decoration = {
+          range: foundKeyword.range,
+          hoverMessage: `Block Level: ${currentLevel}`,
+        };
 
-      const decoration = {
-        range: foundKeyword.range,
-        hoverMessage: `Block Level: ${currentLevel}`,
-      };
-
-      decorations[currentLevel] = decorations[currentLevel] || [];
-      decorations[currentLevel].push(decoration);
+        decorations[currentLevel] = decorations[currentLevel] || [];
+        decorations[currentLevel].push(decoration);
+      });
     }
 
     for (let i = 0; i < this.decorationType.length; i++) {
@@ -105,23 +98,38 @@ class RainbowDecorator {
     }
   }
 
-  private findKeyword(
-    line: vscode.TextLine,
-    keywords: string[]
-  ): FoundKeyword | null {
-    for (const keyword of keywords) {
-      let start = line.text.search(`(?<!//.*)(?<!{.*)\\b${keyword}\\b(?!})`);
-      if (start > -1) {
-        return {
-          keyword: keyword,
-          range: new vscode.Range(
-            new vscode.Position(line.lineNumber, start),
-            new vscode.Position(line.lineNumber, start + keyword.length)
-          ),
-        };
-      }
+  private findKeywords(line: vscode.TextLine): FoundKeyword[] {
+    const keywordRegex =
+      "(" +
+      this.keywords.reduce(
+        (accumulator, current) =>
+          accumulator.length === 0 ? current : `${accumulator}|${current}`,
+        ""
+      ) +
+      ")";
+
+    const regex = RegExp(`(?<!//.*)(?<!{.*)\\b${keywordRegex}\\b(?!})`, "ig");
+
+    const foundKeywords: FoundKeyword[] = [];
+    let matchedResult: RegExpExecArray | null;
+    while ((matchedResult = regex.exec(line.text)) !== null) {
+      const foundKeyword: FoundKeyword ={
+        keyword: matchedResult[0],
+        range: new vscode.Range(
+          new vscode.Position(line.lineNumber, matchedResult.index),
+          new vscode.Position(
+            line.lineNumber,
+            matchedResult.index + matchedResult[0].length
+          )
+        ),
+      };
+      foundKeywords.push(foundKeyword);
     }
 
-    return null;
+    foundKeywords.sort(
+      (a, b) => a.range.start.character - b.range.start.character
+    );
+
+    return foundKeywords;
   }
 }
