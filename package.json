@@ -15,6 +15,15 @@
     "onLanguage:delphi"
   ],
   "main": "./dist/extension.js",
+  "license": "MIT",
+  "homepage": "https://github.com/Skarvion/pascalrainbowblock/blob/main/README.md",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Skarvion/pascalrainbowblock"
+  },
+  "bugs": {
+    "url": "https://github.com/Skarvion/pascalrainbowblock/issues"
+  },
   "contributes": {
     "languages": [
       {
