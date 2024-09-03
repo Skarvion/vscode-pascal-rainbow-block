@@ -26,6 +26,21 @@
     "url": "https://github.com/Skarvion/pascal-rainbow-block/issues"
   },
   "contributes": {
+    "configuration": {
+      "type": "object",
+      "title": "Pascal Rainbow Block configuration",
+      "properties": {
+        "pascalRainbowBlock.colors": {
+          "type": "array",
+          "default": [
+            "rgba(255,255,64)",
+            "rgba(127,255,127)",
+            "rgba(255,127,255)",
+            "rgba(79,236,236)"
+          ]
+        }
+      }
+    },
     "languages": [
       {
         "id": "pascal",

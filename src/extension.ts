@@ -5,7 +5,7 @@ import * as vscode from "vscode";
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-  let rainbowDecorator = new RainbowDecorator();
+  const rainbowDecorator = new RainbowDecorator();
 
   if (vscode.window.activeTextEditor) {
     rainbowDecorator.updateDecorations(vscode.window.activeTextEditor);
@@ -35,24 +35,31 @@ export function activate(context: vscode.ExtensionContext) {
   );
 }
 
+function getConfigurations(): vscode.WorkspaceConfiguration {
+  return vscode.workspace.getConfiguration("pascalRainbowBlock");
+}
+
 interface FoundKeyword {
   keyword: string;
   range: vscode.Range;
 }
 
 class RainbowDecorator {
-  private decorationType: vscode.TextEditorDecorationType[] = [];
+  private decorationTypes: vscode.TextEditorDecorationType[] = [];
 
   private keywords = ["begin", "end", "try", "except", "finally"];
 
   constructor() {
-    for (let i = 1; i <= 7; i++) {
-      this.decorationType.push(
+    // Following color scheme with vscode-indent-rainbow
+    const colors: string[] = getConfigurations()['colors'];
+
+    colors.forEach((color) => {
+      this.decorationTypes.push(
         vscode.window.createTextEditorDecorationType({
-          color: `hsl(${i * 60}, 100%, 80%)`,
+          color: color,
         })
       );
-    }
+    });
   }
 
   public updateDecorations(editor: vscode.TextEditor) {
@@ -63,7 +70,7 @@ class RainbowDecorator {
       return;
     }
 
-    const decorations: vscode.DecorationOptions[][] = [];
+    const decorations: vscode.DecorationOptions[][] = this.decorationTypes.map(() => []);
 
     let stack: number[] = [];
     let currentLevel = 0;
@@ -92,14 +99,14 @@ class RainbowDecorator {
           hoverMessage: `Block Level: ${currentLevel}`,
         };
 
-        decorations[currentLevel] = decorations[currentLevel] || [];
-        decorations[currentLevel].push(decoration);
+        const decorationLevel = currentLevel % decorations.length;
+        decorations[decorationLevel].push(decoration);
       });
     }
 
-    for (let i = 0; i < this.decorationType.length; i++) {
-      editor.setDecorations(this.decorationType[i], decorations[i] || []);
-    }
+    this.decorationTypes.forEach((decorationType, index) => {
+      editor.setDecorations(decorationType, decorations[index])
+    });
   }
 
   private findKeywords(line: vscode.TextLine): FoundKeyword[] {
