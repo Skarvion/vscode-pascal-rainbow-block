@@ -1,5 +1,5 @@
 {
-  "name": "pascalrainbowblock",
+  "name": "pascal-rainbow-block",
   "displayName": "Pascal Rainbow Block",
   "description": "Set begin and end block with rainbow colour based on level.",
   "version": "0.0.3",
@@ -15,14 +15,15 @@
     "onLanguage:delphi"
   ],
   "main": "./dist/extension.js",
+  "icon": "/images/pascal-rainbow-block-icon.png",
   "license": "MIT",
-  "homepage": "https://github.com/Skarvion/pascalrainbowblock/blob/main/README.md",
+  "homepage": "https://github.com/Skarvion/pascal-rainbow-block/blob/main/README.md",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Skarvion/pascalrainbowblock"
+    "url": "https://github.com/Skarvion/pascal-rainbow-block"
   },
   "bugs": {
-    "url": "https://github.com/Skarvion/pascalrainbowblock/issues"
+    "url": "https://github.com/Skarvion/pascal-rainbow-block/issues"
   },
   "contributes": {
     "languages": [
