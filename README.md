@@ -12,7 +12,7 @@ The highlighted keywords are:
 - `except`
 - `finally`
 
-Compatible with Pascal and DelphiLSP extension. Haven't test with OmniPascal.
+Compatible with Pascal, DelphiLSP and OmniPascal extensions.
 
 ## Roadmap
 
